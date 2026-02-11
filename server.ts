@@ -7,21 +7,22 @@ app.use(express.json());
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
-    service: "Multi-Tenant SaaS",
+    service: "Multi Tenant SaaS",
     time: new Date().toISOString(),
   });
 });
 
-// Tenant example
+// Example tenant route
 app.get("/tenant/:tenantId", (req, res) => {
   const { tenantId } = req.params;
+
   res.json({
     tenantId,
-    message: `Hello tenant ${tenantId}`,
+    message: "Tenant loaded successfully",
   });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
