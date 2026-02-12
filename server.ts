@@ -1,13 +1,16 @@
 import express from "express";
-import pkg from "pg";
+import { Pool } from "pg";
+import dotenv from "dotenv";
 
-const { Pool } = pkg;
+dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+// مهم جداً لـ Render
+const PORT = process.env.PORT || 10000;
 
+// الاتصال بقاعدة البيانات
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -15,20 +18,29 @@ const pool = new Pool({
   },
 });
 
+// الصفحة الرئيسية
 app.get("/", (req, res) => {
-  res.send("🚀 SaaS is running successfully");
+  res.status(200).send("🚀 SaaS is running successfully");
 });
 
+// اختبار قاعدة البيانات
 app.get("/test-db", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
-    res.send("Database connected successfully: " + result.rows[0].now);
+    res.status(200).json({
+      success: true,
+      time: result.rows[0].now,
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Database connection failed");
+    console.error("Database error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+    });
   }
 });
 
+// تشغيل السيرفر
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
